@@ -43,5 +43,39 @@ class Connection_db:
         cursor_db = connector_db.cursor()
         cursor_db.execute(sql)
         comment_sql = cursor_db.fetchone()        
-        return comment_sql    
+        return comment_sql
+    
+    # Insert into Database a Response    
+    def sql_add_response(response):
+        connector_db = Connection_db.connector_db()        
+        sql = f"INSERT INTO responses(response_user, response_datetime, response_contain, comment_id) VALUES('{response['response_user']}', '{datetime.now()}', '{response['response_contain']}', '{response['comment_id']}')"
+        print(sql)        
+        connector_db.cursor().execute(sql)
+        connector_db.commit()
+    
+    # Update into Database a Response
+    def sql_update_response(response):
+        connector_db = Connection_db.connector_db()        
+        sql = f"UPDATE reponses SET response_user = '{response['response_user']}', response_datetime = '{datetime.now()}', response_contain = '{response['response_contain']}', comment_id = '{response['comment_id']}' WHERE response_id = {response['response_id']})"
+        print(sql)        
+        connector_db.cursor().execute(sql)
+        connector_db.commit()
+
+    # Delete response into Database a response_id
+    def sql_delete_response(response_id):
+        connector_db = Connection_db.connector_db()        
+        sql = f"DELETE FROM responses WHERE response_id = {response_id}"
+        print(sql)        
+        connector_db.cursor().execute(sql)
+        connector_db.commit()
+
+    # Get a Response list data from Database a response_id
+    def sql_get_response_for_id(response_id):
+        connector_db = Connection_db.connector_db()        
+        sql = f"SELECT * FROM responses WHERE response_id ='{response_id}'"
+        print(sql)
+        cursor_db = connector_db.cursor()
+        cursor_db.execute(sql)
+        response_sql = cursor_db.fetchone()        
+        return response_sql    
     
