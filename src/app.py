@@ -1,46 +1,8 @@
-from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
+from flask import request
 from datetime import datetime
-
-# Configure attribute app connection database with Flask-SQLAlchemy
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:1234@127.0.0.1:23306/db_blogger'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-ma = Marshmallow(app)
-
-# Class Comment attributes columns database
-class Comment(db.Model):
-    id_comment = db.Column(db.Integer, primary_key = True)
-    user_comment = db.Column(db.String(30), nullable = False)
-    datetime_comment = db.Column(db.DateTime, default = datetime.utcnow)
-    title_comment = db.Column(db.String(50), nullable = False)
-    content_comment = db.Column(db.String(200), nullable = False)
-
-    # Constructor class Comment
-    def __init__(self, user_comment, datetime_comment, title_comment, content_comment):
-        self.user_comment = user_comment
-        self.datetime_comment = datetime_comment
-        self.title_comment = title_comment
-        self.content_comment = content_comment
-
-    # class Comment to String format
-    def __repr__(self):
-        return f"User : {self.user_comment} Datetime : {self.datetime_comment} Title Comment : {self.title_comment} Content Comment : {self.content_comment}"
-
-app.app_context().push()
-# Create database schema with class Comment
-db.create_all()
-
-# Class Schema with database Columns
-class Comment_Schema(ma.Schema):
-    class Meta:
-        fields = ('id_comment', 'user_comment', 'datetime_comment', 'title_comment', 'content_comment')
-        
-# Instance Class Comment_Schema for one o many rows database        
-comment_schema = Comment_Schema()
-comments_schema = Comment_Schema(many=True)
+from db_model import app, db, ma, comment_schema, comments_schema, response_schema, responses_schema
+from comment import Comment
+from response import Response
 
 # Function API REST POST create new comment database
 @app.route('/comment_POST', methods=['POST'])
@@ -86,6 +48,50 @@ def delete_comment(id_comment):
     db.session.commit()
     print(comment)
     return comment_schema.jsonify(comment)
+
+# Function API REST POST create new response database
+@app.route('/response_POST/<int:id_comment>', methods=['POST'])
+def create_response(id_comment):
+    print(request.json)
+    params = request.json    
+    response = Response(params['user_response'], datetime.now(), params['content_response'], id_comment)
+    db.session.add(response)
+    db.session.commit()
+    return response_schema.jsonify(response)
+
+# Function API REST GET obtain all responses of comment from database
+@app.route('/responses_GET/<int:id_comment>', methods=['GET'])
+def get_responses(id_comment):    
+    responses = Response.query.filter_by(id_comment = id_comment).all()
+    print(responses)    
+    return responses_schema.jsonify(responses)
+
+# Function API REST GET obtain response from database with id parameter
+@app.route('/response_GET/<int:id_response>', methods=['GET'])
+def get_response(id_response):
+    response = Response.query.filter_by(id_response = id_response).first()
+    return response_schema.jsonify(response)
+
+# Function API REST PUT modified response from database with id parameter
+@app.route('/response_PUT/<int:id_response>', methods=['PUT'])
+def put_response(id_response):
+    response = Response.query.filter_by(id_response = id_response).first()
+    params = request.json
+    response.user_response = params['user_response']
+    response.datetime_response = datetime.now()    
+    response.content_response = params['content_response']
+    db.session.commit()
+    print(response)
+    return response_schema.jsonify(response)
+
+# Function API REST DELETE delete response from database with id parameter
+@app.route('/response_DEL/<int:id_response>', methods=['DELETE'])
+def delete_response(id_response):
+    response = Response.query.filter_by(id_response = id_response).first()
+    db.session.delete(response)
+    db.session.commit()
+    print(response)
+    return response_schema.jsonify(response)
 
 
 # Start run app
