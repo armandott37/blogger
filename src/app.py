@@ -5,7 +5,7 @@ from comment import Comment
 from response import Response
 
 # Function API REST POST create new comment database
-@app.route('/api/v1/comment', methods=['POST'])
+@app.route('/api/v1/comments', methods=['POST'])
 def create_comment():
     print(request.json)
     params = request.json    
@@ -22,13 +22,13 @@ def get_comments():
     return comments_schema.jsonify(comments)
 
 # Function API REST GET obtain comment from database with id parameter
-@app.route('/api/v1/comment/<int:id>', methods=['GET'])
+@app.route('/api/v1/comments/<int:id>', methods=['GET'])
 def get_comment(id):
     comment = Comment.query.filter_by(id_comment = id).first()
     return comment_schema.jsonify(comment)
 
 # Function API REST PUT modified comment from database with id parameter
-@app.route('/api/v1/comment/<int:id>', methods=['PUT'])
+@app.route('/api/v1/comments/<int:id>', methods=['PUT'])
 def put_comment(id):
     comment = Comment.query.filter_by(id_comment = id).first()
     params = request.json
@@ -41,7 +41,7 @@ def put_comment(id):
     return comment_schema.jsonify(comment)
 
 # Function API REST DELETE delete comment from database with id parameter
-@app.route('/api/v1/comment/<int:id>', methods=['DELETE'])
+@app.route('/api/v1/comments/<int:id>', methods=['DELETE'])
 def delete_comment(id):
     comment = Comment.query.filter_by(id_comment = id).first()
     db.session.delete(comment)
@@ -50,7 +50,7 @@ def delete_comment(id):
     return comment_schema.jsonify(comment)
 
 # Function API REST POST create new response database with id comment parameter
-@app.route('/api/v1/response/<int:id>', methods=['POST'])
+@app.route('/api/v1/responses/<int:id>', methods=['POST'])
 def create_response(id):
     print(request.json)
     params = request.json    
@@ -59,21 +59,21 @@ def create_response(id):
     db.session.commit()
     return response_schema.jsonify(response)
 
-# Function API REST GET obtain all responses of comment from database
-@app.route('/api/v1/responses/<int:id>', methods=['GET'])
-def get_responses(id):    
-    responses = Response.query.filter_by(id_comment = id).all()
-    print(responses)    
-    return responses_schema.jsonify(responses)
+# Function API REST GET obtain all responses of comment with id comment parameter
+#@app.route('/api/v1/responses/<int:id>', methods=['GET'])
+#def get_responses(id):    
+#    responses = Response.query.filter_by(id_comment = id).all()
+#    print(responses)    
+#    return responses_schema.jsonify(responses)
 
 # Function API REST GET obtain response from database with id response parameter
-@app.route('/api/v1/response/<int:id>', methods=['GET'])
+@app.route('/api/v1/responses/<int:id>', methods=['GET'])
 def get_response(id):
     response = Response.query.filter_by(id_response = id).first()
     return response_schema.jsonify(response)
 
 # Function API REST PUT modified response from database with id parameter
-@app.route('/api/v1/response/<int:id>', methods=['PUT'])
+@app.route('/api/v1/responses/<int:id>', methods=['PUT'])
 def put_response(id):
     response = Response.query.filter_by(id_response = id).first()
     params = request.json
@@ -85,7 +85,7 @@ def put_response(id):
     return response_schema.jsonify(response)
 
 # Function API REST DELETE delete response from database with id parameter
-@app.route('/api/v1/response/<int:id>', methods=['DELETE'])
+@app.route('/api/v1/responses/<int:id>', methods=['DELETE'])
 def delete_response(id):
     response = Response.query.filter_by(id_response = id).first()
     db.session.delete(response)
